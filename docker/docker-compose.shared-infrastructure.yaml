@@ -1,0 +1,31 @@
+name: shared-infrastructure
+
+services:
+  rabbitmq:
+    image: rabbitmq:4.2.4-management-alpine
+    container_name: rabbitmq
+    networks:
+      - ojt_shared_network
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_ADMIN_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_ADMIN_PASSWORD:-password}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  rabbitmq-data:
+
+networks:
+  ojt_shared_network:
+    name: ojt_shared_network
+    driver: bridge

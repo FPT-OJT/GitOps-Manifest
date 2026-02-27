@@ -1,0 +1,12 @@
+# README
+README.md
+
+# IDEA
+.vscode/
+.intellij/
+Makefile
+
+# Git files
+.github/
+.gitignore
+.git/
