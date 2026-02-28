@@ -11,18 +11,18 @@ up:
 	podman compose -f docker/docker-compose.shared-infrastructure.yaml --env-file env/shared-infrastructure.env up -d --wait
 
 	podman compose -f docker/docker-compose.authentication-service.yaml --env-file env/authentication-service.env up -d --pull always
-	podman compose -f docker/docker-compose.gateway-service.yaml --env-file env/gateway-service.env up -d --pull always
 	podman compose -f docker/docker-compose.core-service.yaml --env-file env/core-service.env up -d --pull always
+	podman compose -f docker/docker-compose.gateway-service.yaml --env-file env/gateway-service.env up -d --pull always
 
 down:
 	podman compose -f docker/docker-compose.gateway-service.yaml --env-file env/gateway-service.env down -v
-	podman compose -f docker/docker-compose.authentication-service.yaml --env-file env/authentication-service.env down -v
 	podman compose -f docker/docker-compose.core-service.yaml --env-file env/core-service.env down -v
+	podman compose -f docker/docker-compose.authentication-service.yaml --env-file env/authentication-service.env down -v
 	podman compose -f docker/docker-compose.shared-infrastructure.yaml --env-file env/shared-infrastructure.env down -v
 
 prune:
 	podman compose -f docker/docker-compose.gateway-service.yaml --env-file env/gateway-service.env down -v --rmi all
-	podman compose -f docker/docker-compose.authentication-service.yaml --env-file env/authentication-service.env down -v --rmi all
 	podman compose -f docker/docker-compose.core-service.yaml --env-file env/core-service.env down -v --rmi all
+	podman compose -f docker/docker-compose.authentication-service.yaml --env-file env/authentication-service.env down -v --rmi all
 	podman compose -f docker/docker-compose.shared-infrastructure.yaml --env-file env/shared-infrastructure.env down -v --rmi all
 	podman system prune -f
