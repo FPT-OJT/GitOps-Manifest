@@ -23,7 +23,6 @@ Local deployment for the OJT backend stack using Podman.
    ```
 
 2. Authenticate with the container registry:
-
    ```sh
    podman login ghcr.io -u <your-username>
    ```
