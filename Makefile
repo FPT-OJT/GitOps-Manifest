@@ -1,28 +1,38 @@
+INFRA_COMPOSE := docker/docker-compose.shared-infrastructure.yaml
+INFRA_ENV := env/shared-infrastructure.env
+
+SERVICES := authentication-service core-service gateway-service
+
 .PHONY: help up down prune
 
 help:
-	@echo Usage:
-	@echo   make up    - Pull (if new image exists) and start all services
-	@echo   make down  - Stop and remove all services and volumes
-	@echo   make prune - Stop and remove all services, volumes, and images
-	@echo   make help  - Show this help message
+	@echo "Usage:"
+	@echo "  make up    - Pull and start all services"
+	@echo "  make down  - Stop and remove all services"
+	@echo "  make prune - Full clean (services, volumes, images)"
 
 up:
-	podman compose -f docker/docker-compose.shared-infrastructure.yaml --env-file env/shared-infrastructure.env up -d --wait
+	@echo "--- Starting Infrastructure ---"
+	podman compose -f $(INFRA_COMPOSE) --env-file $(INFRA_ENV) up -d
+	
+	@echo "--- Waiting for Infrastructure to be ready ---"
+	sleep 5 
 
-	podman compose -f docker/docker-compose.authentication-service.yaml --env-file env/authentication-service.env up -d --pull always
-	podman compose -f docker/docker-compose.core-service.yaml --env-file env/core-service.env up -d --pull always
-	podman compose -f docker/docker-compose.gateway-service.yaml --env-file env/gateway-service.env up -d --pull always
+	@for svc in $(SERVICES); do \
+		echo "--- Starting $$svc ---"; \
+		podman compose -f docker/docker-compose.$$svc.yaml --env-file env/$$svc.env pull; \
+		podman compose -f docker/docker-compose.$$svc.yaml --env-file env/$$svc.env up -d; \
+	done
 
 down:
-	podman compose -f docker/docker-compose.gateway-service.yaml --env-file env/gateway-service.env down -v
-	podman compose -f docker/docker-compose.core-service.yaml --env-file env/core-service.env down -v
-	podman compose -f docker/docker-compose.authentication-service.yaml --env-file env/authentication-service.env down -v
-	podman compose -f docker/docker-compose.shared-infrastructure.yaml --env-file env/shared-infrastructure.env down -v
+	@for svc in $(SERVICES); do \
+		podman compose -f docker/docker-compose.$$svc.yaml --env-file env/$$svc.env down -v; \
+	done
+	podman compose -f $(INFRA_COMPOSE) --env-file $(INFRA_ENV) down -v
 
 prune:
-	podman compose -f docker/docker-compose.gateway-service.yaml --env-file env/gateway-service.env down -v --rmi all
-	podman compose -f docker/docker-compose.core-service.yaml --env-file env/core-service.env down -v --rmi all
-	podman compose -f docker/docker-compose.authentication-service.yaml --env-file env/authentication-service.env down -v --rmi all
-	podman compose -f docker/docker-compose.shared-infrastructure.yaml --env-file env/shared-infrastructure.env down -v --rmi all
+	@for svc in $(SERVICES); do \
+		podman compose -f docker/docker-compose.$$svc.yaml --env-file env/$$svc.env down -v --rmi all; \
+	done
+	podman compose -f $(INFRA_COMPOSE) --env-file $(INFRA_ENV) down -v --rmi all
 	podman system prune -f

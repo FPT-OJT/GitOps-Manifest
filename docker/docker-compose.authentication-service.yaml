@@ -71,5 +71,6 @@ volumes:
   auth-redis-data:
 
 networks:
+  default:
   ojt_shared_network:
     external: true

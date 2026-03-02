@@ -3,6 +3,7 @@ name: ojt-backend
 services:
   ojt-backend:
     image: ghcr.io/fpt-ojt/core-service:latest
+    platform: linux/amd64
     container_name: ojt-backend
     networks:
       - default
@@ -26,7 +27,7 @@ services:
         condition: service_healthy
 
   postgres:
-    image: postgis/postgis:18-3.6
+    image: kartoza/postgis:16-3.4
     container_name: ${POSTGRES_CONTAINER_NAME}
     networks:
       - default
@@ -63,5 +64,6 @@ volumes:
   redis-data:
 
 networks:
+  default:
   ojt_shared_network:
     external: true

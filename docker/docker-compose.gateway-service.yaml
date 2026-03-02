@@ -40,9 +40,6 @@ services:
 
   # ── Gateway ─────────────────────────────────────────────────────────────────
   gateway:
-    build:
-      context: ..
-      dockerfile: ./deployments/Dockerfile
     image: ghcr.io/fpt-ojt/gateway-service:latest
 
     restart: unless-stopped
