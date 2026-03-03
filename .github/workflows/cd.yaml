@@ -8,16 +8,11 @@ on:
 jobs:
   sync-manifest:
     name: Sync GitOps Manifest on Production Server
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
-      - name: Pull latest manifest via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            set -e
-            cd /Users/hork/Downloads/GitOps-Manifest/
-            git pull origin main
+      - name: Deploy Locally on Self-Hosted
+        run: |
+          set -e
+          cd /Users/hork/Downloads/GitOps-Manifest/
+          git pull origin main
